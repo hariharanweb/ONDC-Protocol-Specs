@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: ONDC Protocol Core API
-  description: ONDC Protocol Core API specification. This is an adaptation of Beckn Core version 0.9.3
-  version: 1.0.1
+  title: ONDC Protocol Core API for Mobility Services.
+  description: ONDC Protocol Core API specification for mobility services.
+  version: 0.0.0
 security:
   - SubscriberAuth: []
   - GatewaySubscriberAuth: []
@@ -15,7 +15,7 @@ paths:
         - ONDC Gateway
       description: Search for services by intent
       requestBody:
-        description: Buyer searches for products and services
+        description: Buyer searches for mobility services
         content:
           application/json:
             schema:
@@ -1918,6 +1918,10 @@ components:
           description: This is the most unique identifier of a service item. An example of an Item ID could be the SKU of a product.
           type: string
           # format: '#/components/schemas/Item/properties/id'
+        "@org/ondc/route":
+          type: array
+          items:
+            $ref: '#/components/schemas/Route'
         parent_item_id:
           $ref: '#/components/schemas/Item/properties/id'
         descriptor:
@@ -2213,7 +2217,7 @@ components:
         maximum_value:
           $ref: '#/components/schemas/DecimalValue'
     Provider:
-      description: 'Describes a service provider. This can be a restaurant, a hospital, a Store etc'
+      description: 'Describes a service provider. This can be a ride, ticket, vehicle'
       type: object
       properties:
         id:
@@ -2312,6 +2316,25 @@ components:
         rating_ack:
           description: If rating has been recorded or not
           type: boolean
+    Route:
+      type: object
+      description: Describes a route
+      properties:
+        routeName:
+          description: Describes the name of the route.
+          type: string
+        startLocation:
+          $ref: '#/components/schemas/Location'
+        endLocation:
+          $ref: '#/components/schemas/Location'
+        stops:
+          type: array
+          items:
+            $ref: '#/components/schemas/Location'
+        frequency:
+          type: array
+          items:
+            $ref: '#/components/schemas/Schedule'
     Scalar:
       description: An object representing a scalar quantity.
       type: object
