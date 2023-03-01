@@ -1440,6 +1440,30 @@ components:
       required:
         - name
         - phone
+    BookingCategory:
+      description: Describes the booking category
+      type: object
+      properties:
+        booking_category_id:
+          type: string
+        booking_category_name:
+          type: string
+        fare_type:
+          type: string
+          enum:
+            - Seat
+            - Quantity
+        fare_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              fare_category_id:
+                type: string
+              fare_category_name:
+                type: string
+              price:
+                $ref: '#/components/schemas/Price'
     Cancellation:
       description: Describes the ACK response
       type: object
@@ -2061,6 +2085,17 @@ components:
                 $ref: '#/components/schemas/Item/properties/id'
               quantity:
                 $ref: '#/components/schemas/ItemQuantity/properties/selected'
+              "@org/ondc/selected_booking_category":
+                type: array
+                items:
+                  properties:
+                    booking_category_id:
+                      type: string
+                    fare_category_id:
+                      type: string
+                  required:
+                    - booking_category_id
+                    - fare_category_id
             required:
               - id
         add_ons:
@@ -2320,12 +2355,12 @@ components:
       type: object
       description: Describes a route
       properties:
-        routeName:
+        route_name:
           description: Describes the name of the route.
           type: string
-        startLocation:
+        start_location:
           $ref: '#/components/schemas/Location'
-        endLocation:
+        end_location:
           $ref: '#/components/schemas/Location'
         stops:
           type: array
