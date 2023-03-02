@@ -1440,30 +1440,6 @@ components:
       required:
         - name
         - phone
-    BookingCategory:
-      description: Describes the booking category
-      type: object
-      properties:
-        booking_category_id:
-          type: string
-        booking_category_name:
-          type: string
-        fare_type:
-          type: string
-          enum:
-            - Seat
-            - Quantity
-        fare_categories:
-          type: array
-          items:
-            type: object
-            properties:
-              fare_category_id:
-                type: string
-              fare_category_name:
-                type: string
-              price:
-                $ref: '#/components/schemas/Price'
     Cancellation:
       description: Describes the ACK response
       type: object
@@ -1946,6 +1922,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Route'
+        "@org/ondc/travelClasses":
+          type: array
+          items:
+            $ref: '#/components/schemas/TravelClass'
         parent_item_id:
           $ref: '#/components/schemas/Item/properties/id'
         descriptor:
@@ -2085,16 +2065,22 @@ components:
                 $ref: '#/components/schemas/Item/properties/id'
               quantity:
                 $ref: '#/components/schemas/ItemQuantity/properties/selected'
-              "@org/ondc/selected_booking_category":
+              "@org/ondc/selected_travel_class":
                 type: array
                 items:
                   properties:
-                    booking_category_id:
+                    travel_class_id:
                       type: string
                     fare_category_id:
                       type: string
+                    quantity:
+                      type: integer
+                    selected_seats:
+                      type: array
+                      items:
+                        type: string
                   required:
-                    - booking_category_id
+                    - travel_class_id
                     - fare_category_id
             required:
               - id
@@ -2530,6 +2516,30 @@ components:
           enum:
             - active
             - inactive
+    TravelClass:
+      description: Describes the booking category
+      type: object
+      properties:
+        trave_class_id:
+          type: string
+        trave_class_name:
+          type: string
+        fare_type:
+          type: string
+          enum:
+            - Seat
+            - Quantity
+        fare_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              fare_category_id:
+                type: string
+              fare_category_name:
+                type: string
+              price:
+                $ref: '#/components/schemas/Price'
     Vehicle:
       description: Describes the properties of a vehicle used in a mobility service
       type: object
