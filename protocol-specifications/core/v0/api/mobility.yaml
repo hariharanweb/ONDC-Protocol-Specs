@@ -1513,7 +1513,9 @@ components:
         time:
           $ref: '#/components/schemas/Time'
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Circle:
       description: Describes a circular area on the map
       type: object
@@ -1543,7 +1545,9 @@ components:
         email:
           type: string
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Context:
       description: Describes a ONDC message context
       type: object
@@ -1837,8 +1841,12 @@ components:
               $ref: '#/components/schemas/Authorization'
         rateable:
           $ref: '#/components/schemas/Rateable'
+        "@ondc/org/passenger_count":
+          type: integer
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Gps:
       description: Describes a gps coordinate
       type: string
@@ -1865,7 +1873,9 @@ components:
         item:
           $ref: '#/components/schemas/Item'
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     ItemQuantity:
       description: Describes count or amount of an item
       type: object
@@ -1926,6 +1936,14 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/TravelClass'
+        "@org/ondc/quote_terms":
+          type: array
+          items:
+            type: string
+        "@org/ondc/cancellation_terms":
+          type: array
+          items:
+            type: string
         parent_item_id:
           $ref: '#/components/schemas/Item/properties/id'
         descriptor:
@@ -1951,7 +1969,9 @@ components:
         recommended:
           type: boolean
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Language:
       description: indicates language code. ONDC supports language codes as per ISO 639.2 standard
       type: object
@@ -2203,7 +2223,9 @@ components:
         cred:
           type: string
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Policy:
       description: Describes a policy. Allows for domain extension.
       type: object
@@ -2289,7 +2311,9 @@ components:
         rateable:
           $ref: '#/components/schemas/Rateable'
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
     Quotation:
       description: Describes a quote
       type: object
@@ -2471,11 +2495,44 @@ components:
         ref_id:
           type: string
         channels:
-          $ref: '#/components/schemas/Tags'
-    Tags:
-      description: Describes a tag. This is a simple key-value store which is used to contain extended metadata
-      additionalProperties:
-        type: string
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
+    Tag:
+      description: 'Describes a tag. This is a simple key-value store which is used to contain extended metadata. This object can be added as a property to any schema to describe extended attributes. For BAPs, tags can be sent during search to optimize and filter search results. BPPs can use tags to index their catalog to allow better search functionality. Tags are sent by the BPP as part of the catalog response in the `on_search` callback. Tags are also meant for display purposes. Upon receiving a tag, BAPs are meant to render them as name-value pairs. This is particularly useful when rendering tabular information about a product or service.'
+      type: object
+      properties:
+        code:
+          description: 'The machine-readable name of the tag. The allowed values of this property can be published at three levels namely, a) Core specification, b) industry sector-specific adaptations, and c) Network-specific adaptations. Except core, each adaptation (sector or network) should prefix a unique namespace with the allowed value.'
+          type: string
+        name:
+          description: 'The human-readable name of the tag. This set by the BPP and rendered as-is by the BAP. Sometimes, the network policy may reserve some names for this property. Values outside the reserved values can be set by the BPP. However,the BAP may choose to rename or even ignore this value and render the output purely using the `code` property, but it is recommended for BAPs to keep the name same to avoid confusion and provide consistency.'
+          type: string
+        value:
+          description: The value of the tag. This set by the BPP and rendered as-is by the BAP.
+          type: string
+        display:
+          description: 'This value indicates if the tag is intended for display purposes. If set to `true`, then this tag must be displayed. If it is set to `false`, it should not be displayed. This value can override the group display value.'
+          type: boolean
+    TagGroup:
+      description: 'A collection of tag objects with group level attributes. For detailed documentation on the Tags and Tag Groups schema go to https://github.com/beckn/protocol-specifications/discussions/316'
+      type: object
+      properties:
+        display:
+          description: 'Indicates the display properties of the tag group. If display is set to false, then the group will not be displayed. If it is set to true, it should be displayed. However, group-level display properties can be overriden by individual tag-level display property. As this schema is purely for catalog display purposes, it is not recommended to send this value during search.'
+          type: boolean
+          default: true
+        code:
+          description: 'The machine-readable name of the tag group. The allowed values of this property can be published at three levels namely, a) Core specification, b) industry sector-specific adaptations, and c) Network-specific adaptations. Except core, each adaptation (sector or network) should prefix a unique namespace with the allowed value. Values outside the allowed values may or may not be ignored by the rendering platform. As this schema is purely for catalog display purposes, it is not recommended to send this value during search.'
+          type: string
+        name:
+          description: 'A human-readable string describing the heading under which the tags are to be displayed. Sometimes, the network policy may reserve some names for this property. Values outside the reserved values can be set by the BPP. However,the BAP may choose to rename or even ignore this value and render the output purely using code property, but it is recommended for BAPs to keep the name same to avoid confusion and provide consistency. As this schema is purely for catalog display purposes, it is not recommended to send this value during `search`.'
+          type: string
+        list:
+          description: 'An array of Tag objects listed under this group. This property can be set by BAPs during search to narrow the `search` and achieve more relevant results. When received during `on_search`, BAPs must render this list under the heading described by the `name` property of this schema.'
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
     Time:
       description: Describes time in its various forms. It can be a single point in time; duration; or a structured timetable of operations
       type: object
@@ -2517,12 +2574,12 @@ components:
             - active
             - inactive
     TravelClass:
-      description: Describes the booking category
+      description: Describes the travel class
       type: object
       properties:
-        trave_class_id:
+        travel_class_id:
           type: string
-        trave_class_name:
+        travel_class_name:
           type: string
         fare_type:
           type: string

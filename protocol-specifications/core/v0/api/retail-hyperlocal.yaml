@@ -2078,7 +2078,9 @@ components:
             required attributes include the following -
               net_quantity
         tags:
-          $ref: '#/components/schemas/Tags'
+          type: array
+          items:
+            $ref: '#/components/schemas/TagGroup'
       required:
         - id
         - descriptor
@@ -2752,10 +2754,7 @@ components:
           type: string
         channels:
           $ref: '#/components/schemas/Tags'
-    Tags:
-      description: Describes a tag. This is a simple key-value store which is used to contain extended metadata
-      additionalProperties:
-        type: string
+
     Time:
       description: Describes time in its various forms. It can be a single point in time; duration; or a structured timetable of operations
       type: object
