@@ -2579,6 +2579,8 @@ components:
       properties:
         travel_class_id:
           type: string
+        availability:
+          type: string
         travel_class_name:
           type: string
         fare_type:
